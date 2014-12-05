@@ -7,7 +7,9 @@
  */
 
 #include "syscall.h"
+#include "process.h"
 #include "hw.h"
+#include "../sched/sched.h"
 
 void doSysCallReboot(){
 
@@ -25,6 +27,12 @@ void doSysCallReboot(){
 
 void doSysCallWait(nbQuantums){
 
+	struct pcb_s * current_process = getCurrentProcess();
+	
+	current_process->endwait = 5; //nbQuantums*systemFreq
+	current_process->etat = SLEEPING;
+	
+	ctx_switch_from_irq ();
 	
 }
 
