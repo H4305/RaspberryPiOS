@@ -10,6 +10,16 @@ void * main_lr;
 
 unsigned long quantum = 0;
 
+struct pcb_s * getCurrentProcess() {
+	return current_process;
+}
+
+unsigned long getQuantum() {
+	
+	return quantum;
+	
+}
+
 void init_ctx(struct ctx_s* ctx, func_t f, unsigned int stack_size) {
 	ctx->sp = ((unsigned int) phyAlloc_alloc(stack_size) + STACK_SIZE);
 	ctx->sp -= WORD_SIZE;

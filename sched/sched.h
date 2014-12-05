@@ -26,4 +26,8 @@ void clear_next_process();
 
 void __attribute__ ((naked)) ctx_switch();
 
+//To use it in syscall
+struct pcb_s * getCurrentProcess();
+unsigned long getQuantum();
+
 #endif
