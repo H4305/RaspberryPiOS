@@ -1,7 +1,10 @@
 #ifndef _PROCESS_H_
 #define _PROCESS_H_
+
 typedef enum {READY, SLEEPING, EXECUTING, ZOMBIE} etat;
+
 typedef void (*func_t) ( void*);
+
 typedef struct ctx_s {
         unsigned int sp;
         void *lr;
