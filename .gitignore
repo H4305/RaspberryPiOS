@@ -13,6 +13,8 @@ arm-eabi-toolchain
 *.tar
 *.zip
 
+bin/
+
 # OS generated files #
 ######################
 .DS_Store

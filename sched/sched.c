@@ -2,9 +2,13 @@
 #include "../os/phyAlloc.h"
 #include "../os/hw.h"
 
+#define FIFO
+
 struct pcb_s* idle_process;
 struct pcb_s * current_process = NULL;
 void * main_lr;
+
+unsigned long quantum = 0;
 
 void init_ctx(struct ctx_s* ctx, func_t f, unsigned int stack_size) {
 	ctx->sp = ((unsigned int) phyAlloc_alloc(stack_size) + STACK_SIZE);
@@ -71,25 +75,28 @@ void elect() {
 }
 
 void idle() {
-	while(1)
-		ctx_switch();
+	while(1);
 }
 
 void ctx_switch_from_irq () {
-
 	DISABLE_IRQ();
+	quantum++;
+#ifndef FIFO 	
 	__asm("sub lr, lr, #4");
+#endif
 	__asm("srsdb sp!, #0x13");
+#ifndef FIFO
 	__asm("cps #0x13");
-	
 	__asm("push {r0-r12}");
 	__asm("mov %0, sp" : "=r"(current_process->context.sp));
 	
 	elect();
 	__asm("mov sp, %0" : : "r"(current_process->context.sp));
-		
+#endif
 	set_tick_and_enable_timer();
+#ifdef FIFO
 	__asm("pop {r0-r12}");
+#endif
 	ENABLE_IRQ();
 	__asm("rfeia sp!");
 }	
