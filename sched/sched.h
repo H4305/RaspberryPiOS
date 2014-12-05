@@ -1,24 +1,14 @@
 #ifndef _SCHED_H_
 #define _SCHED_H_
 
+#include "../os/process.h"
+
 #define STACK_SIZE 512
 #define WORD_SIZE 4
 #define CPSR 0x13
 
 #define NULL ((void*)0)
-typedef enum {READY, SLEEPING, EXECUTING, ZOMBIE} etat;
-typedef void (*func_t) ( void*);
-typedef struct ctx_s {
-        unsigned int sp;
-        void *lr;
-} ctx_s;
-typedef struct pcb_s {
-	etat etat;
-	struct ctx_s context;
-	struct pcb_s * next;
-	func_t func_pointer;
-	void* args;
-}pcb_s;
+
 
 
 /*struct ctx_s* current_ctx;*/
