@@ -7,7 +7,6 @@
  */
 
 #include "syscall.h"
-#include "hw.h"
 
 void doSysCallReboot(){
 
@@ -25,6 +24,9 @@ void doSysCallReboot(){
 
 void doSysCallWait(nbQuantums){
 
+	
+	
+	
 	
 }
 

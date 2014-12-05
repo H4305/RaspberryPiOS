@@ -6,7 +6,7 @@ ASFLAGS = -g -march=armv6z
 BIN_DIR = bin/
 
 
-C_FILES= os/kernel.c os/phyAlloc.c os/hw.c sched/sched.c
+C_FILES= os/kernel.c os/phyAlloc.c os/hw.c os/syscall.c sched/sched.c 
 AS_FILES=os/vectors.s
 
 OBJ = $(patsubst %.s,%.o,$(AS_FILES))
