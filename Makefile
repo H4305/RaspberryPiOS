@@ -4,7 +4,7 @@ CFLAGS = -I -Wall -nostdlib -fomit-frame-pointer -mno-apcs-frame -nostartfiles -
 ASFLAGS = -g -march=armv6z
 
 
-C_FILES= os/kernel.c os/phyAlloc.c os/hw.c sched/sched.c
+C_FILES= os/kernel.c os/phyAlloc.c os/hw.c sched/sched.c os/syscall.c
 AS_FILES=os/vectors.s
 
 OBJS = $(patsubst %.s,%.o,$(AS_FILES))
@@ -15,15 +15,15 @@ OBJS += $(patsubst %.c,%.o,$(C_FILES))
 gcc : kernel
 
 clean :
-	rm -f *.o
-	rm -f *.bin
-	rm -f *.hex
-	rm -f *.elf
-	rm -f *.list
-	rm -f *.img
-	rm -f *.bc
-	rm -f *.clang.opt.s
-	rm -f *~
+	rm -rf *.o
+	rm -rf *.bin
+	rm -rf *.hex
+	rm -rf *.elf
+	rm -rf *.list
+	rm -rf *.img
+	rm -rf *.bc
+	rm -rf *.clang.opt.s
+	rm -rf *~
 
 %.o : %.c
 	$(ARMGNU)-gcc $(CFLAGS) -c $< -o $@
