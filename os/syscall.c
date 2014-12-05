@@ -7,6 +7,8 @@
  */
 
 #include "syscall.h"
+#include "process.h"
+#include "hw.h"
 
 void doSysCallReboot(){
 
