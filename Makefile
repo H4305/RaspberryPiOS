@@ -32,7 +32,7 @@ clean :
 	$(ARMGNU)-as $(ASFLAGS) $< -o $@
 
 kernel : os/memmap $(OBJS)
-	$(ARMGNU)-ld $(OBJS) -T memmap -o kernel.elf
+	$(ARMGNU)-ld $(OBJS) -T os/memmap -o kernel.elf
 	$(ARMGNU)-objdump -D kernel.elf > kernel.list
 	$(ARMGNU)-objcopy kernel.elf -O binary kernel.img
 	$(ARMGNU)-objcopy kernel.elf -O ihex kernel.hex
