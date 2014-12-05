@@ -16,7 +16,7 @@ typedef struct pcb_s {
 	struct pcb_s * next;
 	func_t func_pointer;
 	void* args;
-	int endwait;
+	int quantum_end_wait;
 }pcb_s;
 
 

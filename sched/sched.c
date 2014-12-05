@@ -77,7 +77,20 @@ void elect() {
 		set_tick_and_enable_timer();
 		ENABLE_IRQ();
 	}
+	
 	current_process = next;
+	
+	while(next->etat == SLEEPING) {
+		DISABLE_IRQ();
+		
+		if(quantum > current_process->quantum_end_wait) {
+			current_process->etat = READY;
+		} else {
+			current_process = next;
+			set_tick_and_enable_timer();
+			ENABLE_IRQ();
+		}
+	}
 	
 	if(current_process->etat == READY) {
 		current_process->etat = EXECUTING;
