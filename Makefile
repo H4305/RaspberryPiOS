@@ -1,7 +1,8 @@
 ARMGNU ?= arm-none-eabi
 
-CFLAGS = -Wall -nostdlib -fomit-frame-pointer -mno-apcs-frame -nostartfiles -ffreestanding -g -march=armv6z -marm -mthumb-interwork
+CFLAGS = -I -Wall -nostdlib -fomit-frame-pointer -mno-apcs-frame -nostartfiles -ffreestanding -g -march=armv6z -marm -mthumb-interwork
 ASFLAGS = -g -march=armv6z
+
 
 C_FILES= os/kernel.c os/phyAlloc.c os/hw.c sched/sched.c
 AS_FILES=os/vectors.s

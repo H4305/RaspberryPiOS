@@ -1,4 +1,4 @@
-#include "sched.h"
+#include "../sched/sched.h"
 #include "hw.h"
 
 struct ctx_s ctx_ping;

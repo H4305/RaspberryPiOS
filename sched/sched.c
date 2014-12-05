@@ -1,6 +1,6 @@
 #include "sched.h"
-#include "phyAlloc.h"
-#include "hw.h"
+#include "../os/phyAlloc.h"
+#include "../os/hw.h"
 
 struct pcb_s* idle_process;
 struct pcb_s * current_process = NULL;
