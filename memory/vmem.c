@@ -1,7 +1,8 @@
 #include "vmem.h"
 
  
-unsigned int init_kern_translation_table(void){
+unsigned int init_kern_translation_table(void) {
+	
 	return 4;
 }
 
