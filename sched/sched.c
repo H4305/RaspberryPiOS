@@ -97,7 +97,7 @@ void init_ctx(struct ctx_s* ctx, func_t f, unsigned int stack_size) {
 	ctx->sp -= WORD_SIZE;
 	*((int*) ctx->sp) = (unsigned int)&start_current_process;
 	ctx->sp -= 13 * WORD_SIZE;
-	//ctx->lr = &start_current_process;
+	ctx->lr = &start_current_process;
 }
 
 void init_pcb(struct pcb_s* pcb,func_t f, void* args, unsigned int stack_size) {
@@ -148,11 +148,23 @@ void elect() {
 		ENABLE_IRQ();
 	}
 	
+	if(current_process_waiting != NULL) {
+		decrement_wait_quantum();
+	}
+	
 	current_process = next;
+	
+	while(next->etat == ZOMBIE || next->etat == SLEEPING)
+	{
+		next = current_process->next;
+		current_process = next;
+	}
 	
 	if(current_process->etat == READY) {
 		current_process->etat = EXECUTING;
 	}
+	
+	
 }
 
 void idle() {
@@ -161,22 +173,18 @@ void idle() {
 
 void ctx_switch_from_irq () {
 	DISABLE_IRQ();
-#ifndef FIFO 	
 	__asm("sub lr, lr, #4");
-#endif
 	__asm("srsdb sp!, #0x13");
-#ifndef FIFO
 	__asm("cps #0x13");
+	
 	__asm("push {r0-r12}");
 	__asm("mov %0, sp" : "=r"(current_process->context.sp));
 	
 	elect();
 	__asm("mov sp, %0" : : "r"(current_process->context.sp));
-#endif
+		
 	set_tick_and_enable_timer();
-#ifdef FIFO
 	__asm("pop {r0-r12}");
-#endif
 	ENABLE_IRQ();
 	__asm("rfeia sp!");
 }	

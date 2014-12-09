@@ -34,7 +34,9 @@ void doSysCallWait(nbQuantums){
 	
 	add_processus_waiting_list(current_process);
 	
-	ctx_switch_from_irq ();
+	ctx_switch();
+	
+	//Ca revient ici après que le nbQuantums devient 0 (l'ordonanceur choisi à nouveau le processus endormi -> écrase contexte de a? naked peut etre?
 	
 }
 
