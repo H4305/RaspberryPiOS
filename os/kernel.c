@@ -24,9 +24,11 @@ int kmain (void){
 	create_process(funcB, NULL, STACK_SIZE);
 	create_process(funcA, NULL, STACK_SIZE);
 	start_sched();
+	
 	//ctx_switch();
 	/*
 		Pas atteignable vues nos 2 fonctions
 	*/
-		return	0;
+	sys_wait(5);
+	return	0;
 }

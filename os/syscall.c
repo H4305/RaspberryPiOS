@@ -5,10 +5,10 @@
  * 
  * 
  */
-
+ 
 #include "syscall.h"
-#include "process.h"
 #include "hw.h"
+#include "process.h"
 #include "../sched/sched.h"
 
 void doSysCallReboot(){
@@ -29,12 +29,15 @@ void doSysCallWait(nbQuantums){
 
 	struct pcb_s * current_process = getCurrentProcess();
 	
-	current_process->endwait = 5; //nbQuantums*systemFreq
+	current_process->nb_quantum_wait = nbQuantums + 1;
 	current_process->etat = SLEEPING;
+	
+	add_processus_waiting_list(current_process);
 	
 	ctx_switch_from_irq ();
 	
 }
+
 
 
 void __attribute__ ((naked)) sys_reboot(){   // naked -> traitant d'interuption. Fonction sans sauvegarde (restore) des registres
