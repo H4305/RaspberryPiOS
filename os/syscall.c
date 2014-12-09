@@ -29,7 +29,7 @@ void doSysCallWait(nbQuantums){
 
 	struct pcb_s * current_process = getCurrentProcess();
 	
-	current_process->quantum_end_wait = getQuantum() + nbQuantums;
+	current_process->nb_quantum_wait = nbQuantums;
 	current_process->etat = SLEEPING;
 	
 	ctx_switch_from_irq ();

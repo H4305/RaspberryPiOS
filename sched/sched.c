@@ -8,16 +8,9 @@ struct pcb_s* idle_process;
 struct pcb_s * current_process = NULL;
 void * main_lr;
 
-unsigned long quantum = 0;
 
 struct pcb_s * getCurrentProcess() {
 	return current_process;
-}
-
-unsigned long getQuantum() {
-	
-	return quantum;
-	
 }
 
 void init_ctx(struct ctx_s* ctx, func_t f, unsigned int stack_size) {
@@ -80,18 +73,6 @@ void elect() {
 	
 	current_process = next;
 	
-	while(next->etat == SLEEPING) {
-		DISABLE_IRQ();
-		
-		if(quantum > current_process->quantum_end_wait) {
-			current_process->etat = READY;
-		} else {
-			current_process = next;
-			set_tick_and_enable_timer();
-			ENABLE_IRQ();
-		}
-	}
-	
 	if(current_process->etat == READY) {
 		current_process->etat = EXECUTING;
 	}
@@ -103,7 +84,6 @@ void idle() {
 
 void ctx_switch_from_irq () {
 	DISABLE_IRQ();
-	quantum++;
 #ifndef FIFO 	
 	__asm("sub lr, lr, #4");
 #endif
