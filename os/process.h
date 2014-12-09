@@ -19,6 +19,11 @@ typedef struct pcb_s {
 	long nb_quantum_wait;
 }pcb_s;
 
-
+typedef struct pcb_waiting_s
+{
+    struct pcb_waiting_s *next; /* pointeur sur le reste de la liste */
+    pcb_s * waiting_process; 
+    
+}pcb_waiting_s;
 
 #endif
