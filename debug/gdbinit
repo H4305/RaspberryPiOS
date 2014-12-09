@@ -4,5 +4,10 @@ wh cmd 12
 target remote:1234
 b kmain
 b ctx_switch_from_irq
+b elect
+b kernel.c:21
+b kernel.c:13
+display current_process
+display current_process->next
 source include.gdb
 directory ../

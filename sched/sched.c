@@ -90,7 +90,9 @@ void elect() {
 		ENABLE_IRQ();
 	}
 	
-	current_process = next;
+	if(current_process->etat == ZOMBIE) {
+		current_process = next;
+	}
 	
 	if(current_process->etat == READY) {
 		current_process->etat = EXECUTING;
@@ -98,27 +100,23 @@ void elect() {
 }
 
 void idle() {
-	while(1);
+	while(1) {
+		ctx_switch();
+	}
 }
 
 void ctx_switch_from_irq () {
-	DISABLE_IRQ();
-#ifndef FIFO 	
+	DISABLE_IRQ();	
 	__asm("sub lr, lr, #4");
-#endif
 	__asm("srsdb sp!, #0x13");
-#ifndef FIFO
 	__asm("cps #0x13");
 	__asm("push {r0-r12}");
 	__asm("mov %0, sp" : "=r"(current_process->context.sp));
 	
 	elect();
 	__asm("mov sp, %0" : : "r"(current_process->context.sp));
-#endif
 	set_tick_and_enable_timer();
-#ifdef FIFO
 	__asm("pop {r0-r12}");
-#endif
 	ENABLE_IRQ();
 	__asm("rfeia sp!");
 }	
