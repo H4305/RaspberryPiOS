@@ -21,7 +21,7 @@ MEMMAP = os/memmap
 gcc : kernel
 
 clean :
-	rm -rf */*.o
+	rm -rf bin
 	rm -rf */*.bin
 	rm -rf */*.hex
 	rm -rf */*.elf

@@ -16,7 +16,7 @@ typedef struct pcb_s {
 	struct pcb_s * next;
 	func_t func_pointer;
 	void* args;
-	long  nb_quantum_wait;
+	long nb_quantum_wait;
 }pcb_s;
 
 

@@ -6,11 +6,30 @@
 
 struct pcb_s* idle_process;
 struct pcb_s * current_process = NULL;
+struct pcb_waiting_s * current_process_waiting = NULL;
+
 void * main_lr;
 
 
 struct pcb_s * getCurrentProcess() {
 	return current_process;
+}
+
+void add_processus_waiting_list(struct pcb_s * process) {
+	struct pcb_waiting_s * new;
+	new = (struct pcb_waiting_s*) phyAlloc_alloc(sizeof(struct pcb_waiting_s));
+	
+	if(current_process_waiting==NULL) {
+		current_process_waiting = new;
+		current_process_waiting->next = new;
+		current_process_waiting->waiting_process = process;
+	}else 
+	{
+		new->next = current_process_waiting->next;
+		current_process_waiting->next = new;
+		current_process_waiting->waiting_process = process;
+	}
+	
 }
 
 void init_ctx(struct ctx_s* ctx, func_t f, unsigned int stack_size) {
