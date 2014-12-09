@@ -22,13 +22,71 @@ void add_processus_waiting_list(struct pcb_s * process) {
 	if(current_process_waiting==NULL) {
 		current_process_waiting = new;
 		current_process_waiting->next = new;
+		current_process_waiting->previous = new;
 		current_process_waiting->waiting_process = process;
 	}else 
 	{
 		new->next = current_process_waiting->next;
 		current_process_waiting->next = new;
+		
+		new->previous = current_process_waiting;
+		new->next->previous = new;
+		
+		current_process_waiting = current_process_waiting->next; //Je passe au nouveau processus en attente
 		current_process_waiting->waiting_process = process;
 	}
+	
+}
+
+void decrement_wait_quantum() {
+	
+	pcb_waiting_s * first_process_waiting = current_process_waiting;
+	
+	if(first_process_waiting->next == first_process_waiting) {
+		int nb_quantum_wait = (first_process_waiting->waiting_process->nb_quantum_wait - 1);
+		first_process_waiting->waiting_process->nb_quantum_wait = nb_quantum_wait;
+		
+		if(nb_quantum_wait == 0) {
+			//Remove element from list
+			first_process_waiting->waiting_process->etat = READY;
+			phyAlloc_free(current_process_waiting, sizeof(struct pcb_waiting_s)); //Free de la mémoire 
+			current_process_waiting = NULL; //Liste Vide
+			
+		}
+	}else {
+		
+		while(current_process_waiting->next != first_process_waiting)
+		{
+			int nb_quantum_wait = (current_process_waiting->waiting_process->nb_quantum_wait - 1);
+			current_process_waiting->waiting_process->nb_quantum_wait = nb_quantum_wait;
+		
+			if(nb_quantum_wait == 0) {
+				//Remove element from list
+				current_process_waiting->previous->next = current_process_waiting->next;
+				current_process_waiting->next->previous = current_process_waiting->previous;
+				
+				first_process_waiting->waiting_process->etat = READY;
+				phyAlloc_free(current_process_waiting, sizeof(struct pcb_waiting_s)); //Free de la mémoire 
+							
+			}
+			
+			current_process_waiting = current_process_waiting->next;
+		}
+		
+		int nb_quantum_wait = (current_process_waiting->waiting_process->nb_quantum_wait - 1);
+		current_process_waiting->waiting_process->nb_quantum_wait = nb_quantum_wait;
+	
+		if(nb_quantum_wait == 0) {
+			//Remove element from list
+			current_process_waiting->previous->next = current_process_waiting->next;
+			current_process_waiting->next->previous = current_process_waiting->previous;
+			
+			first_process_waiting->waiting_process->etat = READY;
+			phyAlloc_free(current_process_waiting, sizeof(struct pcb_waiting_s)); //Free de la mémoire 		
+		}
+	}//Fin else
+	
+	
 	
 }
 

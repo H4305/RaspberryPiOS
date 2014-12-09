@@ -16,12 +16,13 @@ typedef struct pcb_s {
 	struct pcb_s * next;
 	func_t func_pointer;
 	void* args;
-	long nb_quantum_wait;
+	int nb_quantum_wait;
 }pcb_s;
 
 typedef struct pcb_waiting_s
 {
-    struct pcb_waiting_s *next; /* pointeur sur le reste de la liste */
+    struct pcb_waiting_s *next; /* pointeur sur le next de la liste */
+    struct pcb_waiting_s *previous; /* pointeur sur le previous de la liste */
     pcb_s * waiting_process; 
     
 }pcb_waiting_s;
