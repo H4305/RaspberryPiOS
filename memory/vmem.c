@@ -1,9 +1,56 @@
 #include "vmem.h"
 
+uint32_t first_tt_flags =
+	(1 << 0) | //1
+	(0 << 1) | //0
+	(0 << 2) | //SBZ
+	(0 << 3) | //NS
+	(0 << 4) | //SBZ
+	(0000 << 5) | //Domain
+	(0 << 9); //P - not supported
+
+uint32_t second_tt_flags = 
+	(0 << 0) | // XN
+	(1 << 1) | // Always 1
+	(0 << 2) | // B
+	(0 << 3) | // C
+	(00 << 4) | // AP
+	(001 << 6) | // TEX
+	(0 << 9) | // APX
+	(0 << 10) | // S	
+	(0 << 11); // NG
+
+uint32_t device_flags = 
+	(0 << 0) | // XN
+	(1 << 1) | // Always 1
+	(1 << 2) | // B
+	(0 << 3) | // C
+	(00 << 4) | // AP
+	(000 << 6) | // TEX
+	(0 << 9) | // APX
+	(0 << 10) | // S	
+	(0 << 11); // NG
+
+
+
  
 unsigned int init_kern_translation_table(void) {
+	int i = 0;
+	unsigned int* first_tt_addr = (unsigned int *) FIRST_LVL_TT_ADDR;
+	unsigned int* second_tt_addr = (unsigned int *) SECON_LVL_TT_ADDR;
 	
-	return 4;
+	for(i = 0; i < FIRST_LVL_TT_COUN; i++) {
+		first_tt_addr[i] = (unsigned int *) first_tt_flags |
+		(SECON_LVL_TT_ADDR + i * SECON_LVL_TT_SIZE << 10);
+	}
+	
+	for(i = 0; i < FIRST_LVL_TT_COUN * SECON_LVL_TT_COUN; i++) {
+		if (i < 0x500000) {
+			second_tt_addr[i] = (unsigned int *) second_tt_flags |
+			(i << 12) 
+		}
+	}
+	return 0;
 }
 
 void start_mmu_C() {
