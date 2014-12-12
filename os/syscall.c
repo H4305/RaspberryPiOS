@@ -27,13 +27,35 @@ void doSysCallReboot(){
 
 void doSysCallWait(nbQuantums){
 
-	struct pcb_s * current_process = getCurrentProcess();
+	DISABLE_IRQ();
+	/*
+	//__asm("sub lr, lr, #4");
+	__asm("srsdb sp!, #0x13");
+	__asm("cps #0x13");
+	
+	__asm("push {r0-r12}");
+	
+	__asm("mov %0, sp" : "=r"(current_process->context.sp));
 	
 	current_process->nb_quantum_wait = nbQuantums + 1;
 	current_process->etat = SLEEPING;
-	
+
 	add_processus_waiting_list(current_process);
 	
+	elect();
+	
+	__asm("mov sp, %0" : : "r"(current_process->context.sp));
+		
+	set_tick_and_enable_timer();
+	__asm("pop {r0-r12}");
+	ENABLE_IRQ();
+	__asm("rfeia sp!");
+	*/
+	
+	current_process->nb_quantum_wait = nbQuantums + 1;
+	current_process->etat = SLEEPING;
+
+	add_processus_waiting_list(current_process);
 	ctx_switch();
 	
 	//Ca revient ici après que le nbQuantums devient 0 (l'ordonanceur choisi à nouveau le processus endormi -> écrase contexte de a? naked peut etre?
@@ -61,7 +83,7 @@ void __attribute__ ((naked)) sys_wait(unsigned int nbQuantums){
 	__asm("mov r1, %0" : : "r"(nbQuantums));
 	__asm("SWI 0" : : : "lr");
 	
-	ENABLE_IRQ();
+	//ENABLE_IRQ();
 }
 
 void __attribute__ ((naked)) SWIHandler(){
@@ -83,8 +105,4 @@ void __attribute__ ((naked)) SWIHandler(){
 	}
 
 }
-
-
-
-
 

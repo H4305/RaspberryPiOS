@@ -29,5 +29,6 @@ void __attribute__ ((naked)) ctx_switch();
 //To use it in syscall
 struct pcb_s * getCurrentProcess();
 void add_processus_waiting_list(struct pcb_s * process);
+struct pcb_s * current_process;
 
 #endif

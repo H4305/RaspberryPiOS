@@ -5,7 +5,7 @@
 #define FIFO
 
 struct pcb_s* idle_process;
-struct pcb_s * current_process = NULL;
+
 struct pcb_waiting_s * current_process_waiting = NULL;
 
 void * main_lr;
