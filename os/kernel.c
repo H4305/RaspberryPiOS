@@ -1,4 +1,5 @@
 #include "../sched/sched.h"
+#include "../memory/vmem.h"
 #include "hw.h"
 
 struct ctx_s ctx_ping;
@@ -20,6 +21,14 @@ void funcB() {
 }
 // ------------------------------------------------------------------------
 int kmain (void){
+	
+	initVmem();
+	
+	sys_wait(5);
+	return	0;
+}
+
+int initSched() {
 	init_hw();
 	create_process(funcB, NULL, STACK_SIZE);
 	create_process(funcA, NULL, STACK_SIZE);
@@ -29,6 +38,16 @@ int kmain (void){
 	/*
 		Pas atteignable vues nos 2 fonctions
 	*/
-	sys_wait(5);
-	return	0;
+}
+
+int initVmem() {
+	unsigned int translation;
+	init_kern_translation_table();
+	configure_mmu_C();
+	translation = tool_translate(4096);
+	translation = tool_translate(48000);
+	translation = tool_translate(256);
+	translation = tool_translate(4095);
+	translation = tool_translate(4097);
+	//start_mmu_C();
 }
