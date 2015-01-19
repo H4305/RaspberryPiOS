@@ -12,8 +12,8 @@ uint32 first_tt_flags =
 uint32 second_tt_flags = 
 	(0 << 0) | // XN
 	(1 << 1) | // Always 1
-	(1 << 2) | // B
-	(1 << 3) | // C
+	(0 << 2) | // B
+	(0 << 3) | // C
 	(00 << 4) | // AP
 	(001 << 6) | // TEX
 	(0 << 9) | // APX
@@ -24,70 +24,91 @@ uint32 device_flags =
 	(0 << 0) | // XN
 	(1 << 1) | // Always 1
 	(1 << 2) | // B
-	(1 << 3) | // C
+	(0 << 3) | // C
 	(00 << 4) | // AP
 	(000 << 6) | // TEX
 	(0 << 9) | // APX
 	(0 << 10) | // S	
 	(0 << 11); // NG
 
+// Available frames table
+uint8* frames_table = (uint8*) VMEM_ALLOC_T_START;
 
-
- /*
-unsigned int init_kern_translation_table(void) {
-	unsigned int i = 0;
-	unsigned int* first_tt_addr = (unsigned int *) FIRST_LVL_TT_ADDR;
-	unsigned int* second_tt_addr = (unsigned int *) SECON_LVL_TT_ADDR;
-	
-	for(i = 0; i < FIRST_LVL_TT_COUN; i++) {
-		first_tt_addr[i] = (unsigned int *) (first_tt_flags |
-		(SECON_LVL_TT_ADDR + i * SECON_LVL_TT_SIZE << 10));
-	}
-	
-	for(i = 0; i < FIRST_LVL_TT_COUN * SECON_LVL_TT_COUN; i++) {
-		if (i < 0x500000) {
-			second_tt_addr[i] = (unsigned int *) (second_tt_flags |
-			(i << 12)); 
-		}
-		else if (i < 0x2000000) { // défaut de traduction
-			second_tt_addr[i] = 0;			
-		}
-		else if (i < 0x20FFFFFF) {
-			second_tt_addr[i] = (unsigned int *) (device_flags |
-			(i << 12));
-		}
-	}
-	return 0;
-}*/
-
+// Initializes the translation table
 unsigned int init_kern_translation_table(void) {
 	
 	uint32* ftt_a = (uint32 *)FIRST_LVL_TT_ADDR;
 	uint32 page_i = 0;
 	unsigned int i;
 	
+	// Iterate through first level table indexes
 	for(i = 0; i < FIRST_LVL_TT_COUN; i ++) {
-		
 		uint32* stt_a = (uint32 *)(SECON_LVL_TT_ADDR + (i << 10));
 		ftt_a[i] = (uint32)
 		first_tt_flags |
-		((uint32)stt_a & 0xFFFFFC00); // [31…second_lvl_table_addr(22MSBs)…10|9…flags…0]
-		
+		((uint32)stt_a & 0xFFFFFC00);
+
 		uint32 j;
+		// Iterate through second level table indexes
 		for( j = 0;j < SECON_LVL_TT_COUN; j ++) {
-			uint32 val = 0; // Page Fault
-			if(page_i < 0x20000000) {
+			uint32 val = 0;
+			
+			if(page_i * PAGE_SIZE < 0x500000) {
 				val = second_tt_flags |
-				(page_i << 12); // [31…page_address(20MSBs)…12|11…flags…0]
-			} else if(i < 0x20FFFFFF) {
+				(page_i << 12);
+			}
+			if(page_i * PAGE_SIZE > 0x20000000 &&
+			   page_i * PAGE_SIZE < 0x20FFFFFF) {
 				val = device_flags |
 				(page_i << 12);
 			}
 			stt_a[j] = val;
-			page_i ++;
+			page_i++;
 		}
 	}
 	return 0;
+}
+
+// Initializes the page frames availability table
+bool avail_frames_init() {
+	for(uint32 i = 0; i < VMEM_TOTAL_PAGES; i ++) {
+		vmem_table[i] = 0;
+	}
+	return true;
+}
+
+// Allocates a frame and returns the adress
+uint8* vMem_alloc(uint32 pages) {
+	for(uint64 i = 0; i < FRAMES_T_PAGES; i ++) {
+		if(frames_table[i] == 0) { // page available
+			//Check if it fits
+			bool fit = true;
+			for(uint64 j = 0; j < pages; j ++) {
+				if(frames_table[i + j] != 0) {
+					fit = false;
+					i = i+j;
+					break;
+				}
+			}
+			// If it fits, allocate it
+			if(fit) {
+				for(uint64 j = 0; j < pages; j ++) {
+					frames_table[i + j] = 1;
+				}
+				return (uint8 *)(i * PAGE_SIZE);
+			}
+		}
+	}
+	return false;
+}
+
+// Free allocated pages
+bool vMem_free(uint8* ptr, uint32 pages) {
+	uint32 page = (uint32)(ptr)/PAGE_SIZE;
+	for(uint32 i = 0; i < pages; i ++) {
+		vmem_table[page + i] = 0;
+	}
+	return true;
 }
 
 void start_mmu_C() {

@@ -33,21 +33,19 @@ int initSched() {
 	create_process(funcB, NULL, STACK_SIZE);
 	create_process(funcA, NULL, STACK_SIZE);
 	start_sched();
-	
-	//ctx_switch();
-	/*
-		Pas atteignable vues nos 2 fonctions
-	*/
 }
 
 int initVmem() {
 	unsigned int translation;
 	init_kern_translation_table();
 	configure_mmu_C();
-	translation = tool_translate(4096);
+	//start_mmu_C();
+	// Kernel pages
 	translation = tool_translate(48000);
 	translation = tool_translate(256);
-	translation = tool_translate(4095);
-	translation = tool_translate(4097);
-	//start_mmu_C();
+	// I/O pages
+	translation = tool_translate(536875008);
+	translation = tool_translate(553648127);
+	// Default pages
+	translation = tool_translate(5242880); // should be 0
 }

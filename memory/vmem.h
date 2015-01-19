@@ -15,6 +15,10 @@
 
 #define FIRST_LVL_TT_ADDR 0x48000
 #define SECON_LVL_TT_ADDR FIRST_LVL_TT_ADDR + FIRST_LVL_TT_SIZE
+
+#define FRAMES_T_START SECON_LVL_TT_ADDR + TOTAL_TT_SIZE
+#define FRAMES_T_SIZE 0x1FB00000
+#define FRAMES_T_PAGES VMEM_TOTAL_SIZE/PAGE_SIZE
 	
 unsigned int init_kern_translation_table(void);
 	
